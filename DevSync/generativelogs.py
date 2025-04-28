@@ -1,5 +1,4 @@
 import random
-import time
 import json
 import csv
 import os
@@ -56,38 +55,46 @@ def generate_log_entry(log_type):
 log_directory = "C:\\logs_output"
 os.makedirs(log_directory, exist_ok=True)
 
+# Function to write log entries to a file based on type
+def write_log_to_file(file_path, log_type, file_extension, mode='w'):
+    if file_extension == "csv":
+        with open(file_path, mode=mode, newline='') as file:
+            writer = csv.writer(file)
+            if mode == 'w':  # Write header only for new file
+                writer.writerow(["timestamp", "message"])
+            for _ in range(150):
+                entry = generate_log_entry(log_type)
+                writer.writerow([entry["timestamp"], entry["message"]])
+    
+    elif file_extension == "json":
+        with open(file_path, mode=mode, newline='') as file:
+            entries = []
+            for _ in range(150):
+                entries.append(generate_log_entry(log_type))
+            json.dump(entries, file, indent=4)
+
+    else:  # For .txt and .log files
+        with open(file_path, mode=mode, newline='') as file:
+            for _ in range(150):
+                entry = generate_log_entry(log_type)
+                file.write(f"[{entry['timestamp']}] {entry['message']}\n")
+
 # Create logs
 def generate_logs():
     for log in log_types:
         log_type = log["type"]
         filename = os.path.join(log_directory, log['filename'])
         file_extension = filename.split(".")[-1]
-        
+
         # Check if file exists to append data, otherwise create a new file
         mode = 'a' if os.path.exists(filename) else 'w'
-        
-        with open(filename, mode=mode, newline='') as file:
-            if file_extension == "csv":
-                writer = csv.writer(file)
-                if mode == 'w':
-                    writer.writerow(["timestamp", "message"])  # Write CSV header only when file is created
-                for _ in range(150):
-                    entry = generate_log_entry(log_type)
-                    writer.writerow([entry["timestamp"], entry["message"]])
-            
-            elif file_extension == "json":
-                entries = []
-                for _ in range(150):
-                    entries.append(generate_log_entry(log_type))
-                json.dump(entries, file, indent=4)
-            
-            else:  # for txt or log files
-                for _ in range(150):
-                    entry = generate_log_entry(log_type)
-                    file.write(f"[{entry['timestamp']}] {entry['message']}\n")
-        
+
+        write_log_to_file(filename, log_type, file_extension, mode)
         print(f"✅ Generated/Updated {filename}")
 
 if __name__ == "__main__":
-    generate_logs()
-    print("\n🎯 All diversified log files generated success!")
+    try:
+        generate_logs()
+        print("\n🎯 All diversified log files generated successfully!")
+    except Exception as e:
+        print(f"❌ Error generating logs: {str(e)}")
