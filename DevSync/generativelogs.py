@@ -52,7 +52,7 @@ def generate_log_entry(log_type):
     }
 
 # Check if the directory exists, if not, create it
-log_directory = "C:\\logs_output"
+log_directory = "D:\\logs_output"
 os.makedirs(log_directory, exist_ok=True)
 
 # Function to write log entries to a file based on type
