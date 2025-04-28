@@ -90,11 +90,11 @@ def generate_logs():
         mode = 'a' if os.path.exists(filename) else 'w'
 
         write_log_to_file(filename, log_type, file_extension, mode)
-        print(f"✅ Generated/Updated {filename}")
+        print(f" Generated/Updated {filename}")
 
 if __name__ == "__main__":
     try:
         generate_logs()
-        print("\n🎯 All diversified log files generated successfully!")
+        print("\n All diversified log files generated successfully!")
     except Exception as e:
-        print(f"❌ Error generating logs: {str(e)}")
+        print(f" Error generating logs: {str(e)}")
