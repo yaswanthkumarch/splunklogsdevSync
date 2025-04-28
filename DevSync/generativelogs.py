@@ -90,4 +90,4 @@ def generate_logs():
 
 if __name__ == "__main__":
     generate_logs()
-    print("\n🎯 All diversified log files generated successfully!")
+    print("\n🎯 All diversified log files generated success!")
