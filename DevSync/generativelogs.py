@@ -3,7 +3,7 @@ import json
 import csv
 import os
 from datetime import datetime
-
+#updated code
 # Define log types with filename and format
 log_types = [
     {"type": "application_log", "filename": "application_log.log"},
