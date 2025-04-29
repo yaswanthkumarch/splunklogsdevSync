@@ -1,0 +1,112 @@
+pipeline {
+    agent any
+
+    environment {
+        PYTHON_HOME = "C:\\Users\\MTL1013\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
+    }
+
+    stages {
+        stage('Debug Info') {
+            steps {
+                echo 'Printing environment variables...'
+                bat 'echo %WORKSPACE%'
+                bat 'echo %PYTHON_HOME%'
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                echo 'Cloning repository...'
+                git credentialsId: 'f4b06705-553e-4f1f-a0bd-8762f1434ac0', 
+                     url: 'https://github.com/yaswanthkumarch/splunklogsdevSync.git', 
+                     branch: 'main'
+            }
+        }
+
+        stage('List Files in Workspace') {
+            steps {
+                echo 'Listing files in the workspace...'
+                bat 'dir %WORKSPACE%'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                script {
+                    // Ensure pip is up-to-date
+                    bat "cd /d %WORKSPACE% && \"%PYTHON_HOME%\" -m pip install --upgrade pip"
+                    
+                    // Check if requirements.txt exists
+                    def requirementsFile = "requirements.txt"
+                    if (fileExists(requirementsFile)) {
+                        bat "cd /d %WORKSPACE% && \"%PYTHON_HOME%\" -m pip install -r ${requirementsFile}"
+                    } else {
+                        echo 'requirements.txt not found, skipping pip install.'
+                    }
+                }
+            }
+        }
+
+        stage('List Files in DevSync') {
+            steps {
+                echo 'Navigating to DevSync and listing files...'
+                bat 'cd DevSync && dir'
+            }
+        }
+
+        stage('Run Python Script') {
+            steps {
+                echo 'Running Python script in DevSync...'
+                bat "cd %WORKSPACE%\\DevSync && \"%PYTHON_HOME%\" generativelogs.py"
+            }
+        }
+
+        stage('Post Actions') {
+            steps {
+                cleanWs()
+            }
+        }
+        
+        stage('Trigger Job B') {
+    steps {
+        build job: 'DevSync_flow'
+    }
+}
+    }
+    
+    post {
+        always {
+            echo 'Pipeline completed - cleaning up or finalizing logs'
+        }
+        success {
+            echo 'Pipeline executed successfully!'
+            emailext (
+                to: 'yaswanth@middlewaretalents.com',
+                subject: "SUCCESS: Logs Generated - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                 Pipeline executed successfully!
+                
+                Job: ${env.JOB_NAME}
+                Build: #${env.BUILD_NUMBER}
+                Console: ${env.BUILD_URL}console
+                """
+            )
+        }
+        failure {
+            echo 'Pipeline failed!'
+            emailext (
+                to: 'yaswanth@middlewaretalents.com',
+                subject: "FAILED: Logs Generation Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                 Pipeline failed!
+                
+                Job: ${env.JOB_NAME}
+                Build: #${env.BUILD_NUMBER}
+                Error: ${currentBuild.currentResult}
+                Debug: ${env.BUILD_URL}console
+                """
+            )
+        }
+    }
+}
