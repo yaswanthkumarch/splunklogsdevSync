@@ -71,11 +71,15 @@ pipeline {
             }
         }
         
-        stage('Trigger Job B') {
+        stage('Trigger DevSync Flow') {
     steps {
-        build job: 'DevSync_flow'
+        script {
+            def jobB = build job: 'DevSync_flow', wait: true, propagate: true
+            echo " DevSync_flow Build URL (Blue Ocean): ${jobB.absoluteUrl.replace('job/', 'blue/organizations/jenkins/').replaceAll('/', '/detail/') + jobB.getNumber() + '/pipeline'}"
+        }
     }
 }
+
     }
     
     post {
