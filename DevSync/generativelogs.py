@@ -75,7 +75,7 @@ def write_log_to_file(file_path, log_type, file_extension, mode='w'):
 
     else:  # For .txt and .log files
         with open(file_path, mode=mode, newline='') as file:
-            for _ in range(150):
+            for _ in range(5000):
                 entry = generate_log_entry(log_type)
                 file.write(f"[{entry['timestamp']}] {entry['message']}\n")
 
