@@ -4,8 +4,6 @@ pipeline {
     githubPush()
    }
 
-
-
     environment {
         PYTHON_HOME = "C:\\Users\\MTL1013\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
     }
