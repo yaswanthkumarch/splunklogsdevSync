@@ -85,6 +85,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline completed - cleaning up or finalizing logs'
+
         }
         success {
             echo 'Pipeline executed successfully!'
