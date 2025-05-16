@@ -117,6 +117,7 @@ pipeline {
                 Error: ${currentBuild.currentResult}
                 Debug: ${env.BUILD_URL}console
                 """
+
             )
         }
     }
