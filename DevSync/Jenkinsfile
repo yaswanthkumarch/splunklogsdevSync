@@ -23,7 +23,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Cloning repository...'
-                git credentialsId: 'f4b06705-553e-4f1f-a0bd-8762f1434ac0', 
+                git credentialsId: '05f309c4-c164-4fc8-8606-54995b7e0fcd', 
                      url: 'https://github.com/yaswanthkumarch/splunklogsdevSync.git', 
                      branch: 'main'
             }
